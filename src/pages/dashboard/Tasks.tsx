@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Grid,
   Paper,
   Typography,
   Card,
@@ -47,6 +46,7 @@ import {
   StepLabel,
   StepContent
 } from '@mui/material';
+import { Grid } from '../../components/GridFix';
 import {
   Timeline,
   TimelineItem,
@@ -547,7 +547,7 @@ export default function Tasks() {
           ...formData as Task,
           id: Date.now().toString(),
           createdBy: user?.id || '1',
-          createdByName: user?.firstName + ' ' + user?.lastName || 'Usuario',
+          createdByName: user?.name || 'Usuario',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           actualHours: 0,
@@ -613,7 +613,7 @@ export default function Tasks() {
     const comment: TaskComment = {
       id: Date.now().toString(),
       userId: user?.id || '1',
-      userName: user?.firstName + ' ' + user?.lastName || 'Usuario',
+      userName: user?.name || 'Usuario',
       userAvatar: '',
       content: newComment,
       createdAt: new Date().toISOString()

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Grid,
   Paper,
   Typography,
   Button,
@@ -34,6 +33,7 @@ import {
   Tabs,
   Tab
 } from '@mui/material';
+import { Grid } from '../../components/GridFix';
 import {
   Add as AddIcon,
   Edit as EditIcon,

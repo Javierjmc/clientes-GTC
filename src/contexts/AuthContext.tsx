@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 
 // Tipos definidos localmente
 enum UserRole {
@@ -11,6 +12,8 @@ interface User {
   id: string;
   email: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   role: UserRole;
   company?: string;
   createdAt: string;
@@ -54,30 +57,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // En una implementación real, haríamos una llamada a la API
-      // Por ahora, simularemos una respuesta exitosa
+      // Simulación de una llamada a la API
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Simulación de delay de red
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // En una implementación real, enviaríamos las credenciales al backend
+      // y recibiríamos un token y datos del usuario
       
-      // Simulación de usuario
+      // Simulamos un usuario autenticado
       const mockUser: User = {
         id: '1',
         email,
-        name: email.split('@')[0],
-        role: email.includes('admin') ? UserRole.ADMINISTRADOR : UserRole.EMPRESARIO,
-        company: email.includes('admin') ? undefined : 'Empresa Demo',
+        name: 'Usuario Demo',
+        role: UserRole.EMPRESARIO,
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString()
       };
       
-      // Guardar en localStorage
-      localStorage.setItem('gtc_token', 'mock_jwt_token');
+      // Guardamos el token y el usuario en localStorage
+      localStorage.setItem('gtc_token', 'mock_token_123');
       localStorage.setItem('gtc_user', JSON.stringify(mockUser));
       
       setUser(mockUser);
     } catch (error) {
-      console.error('Error during login:', error);
       throw new Error('Credenciales inválidas');
     } finally {
       setIsLoading(false);
@@ -93,33 +94,46 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const register = async (userData: { name: string; email: string; password: string; company?: string; role: UserRole }) => {
     setIsLoading(true);
     try {
-      // En una implementación real, haríamos una llamada a la API
-      // Por ahora, simularemos una respuesta exitosa
+      // Simulación de una llamada a la API
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Simulación de delay de red
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // En una implementación real, enviaríamos los datos al backend
+      // y recibiríamos un token y datos del usuario
       
-      // No iniciamos sesión automáticamente después del registro
-      // El usuario deberá verificar su correo primero (en una implementación real)
+      // Simulamos un usuario registrado
+      const mockUser: User = {
+        id: '2',
+        email: userData.email,
+        name: userData.name,
+        role: userData.role,
+        company: userData.company,
+        createdAt: new Date().toISOString(),
+      };
+      
+      // Guardamos el token y el usuario en localStorage
+      localStorage.setItem('gtc_token', 'mock_token_456');
+      localStorage.setItem('gtc_user', JSON.stringify(mockUser));
+      
+      setUser(mockUser);
     } catch (error) {
-      console.error('Error during registration:', error);
       throw new Error('No se pudo completar el registro');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const resetPassword = async (email: string) => {
+  const resetPassword = async (email: string): Promise<void> => {
     setIsLoading(true);
     try {
-      // En una implementación real, haríamos una llamada a la API
-      // Por ahora, simularemos una respuesta exitosa
+      // Simulación de una llamada a la API
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Simulación de delay de red
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // En una implementación real, enviaríamos una solicitud al backend
+      // para enviar un correo de recuperación de contraseña
+      
+      // No devolvemos nada (void)
     } catch (error) {
-      console.error('Error during password reset:', error);
-      throw new Error('No se pudo enviar el correo de restablecimiento');
+      throw new Error('No se pudo procesar la solicitud');
     } finally {
       setIsLoading(false);
     }

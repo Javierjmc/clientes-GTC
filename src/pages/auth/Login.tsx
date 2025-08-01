@@ -7,7 +7,6 @@ import {
   FormControlLabel,
   Checkbox,
   Link,
-  Grid,
   Box,
   Typography,
   Container,
@@ -109,18 +108,14 @@ export default function Login() {
             >
               {isLoading ? <CircularProgress size={24} /> : 'Iniciar Sesión'}
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link component={RouterLink} to="/forgot-password" variant="body2">
-                  ¿Olvidaste tu contraseña?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link component={RouterLink} to="/register" variant="body2">
-                  {"¿No tienes una cuenta? Regístrate"}
-                </Link>
-              </Grid>
-            </Grid>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+              <Link component={RouterLink} to="/forgot-password" variant="body2">
+                ¿Olvidaste tu contraseña?
+              </Link>
+              <Link component={RouterLink} to="/register" variant="body2">
+                {"¿No tienes una cuenta? Regístrate"}
+              </Link>
+            </Box>
           </Box>
         </Box>
       </Paper>

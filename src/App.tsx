@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { esES } from '@mui/material/locale';
@@ -24,7 +25,7 @@ import Tasks from './pages/dashboard/Tasks';
 import Settings from './pages/dashboard/Settings';
 
 // Rutas protegidas
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
   const token = localStorage.getItem('gtc_token');
   if (!token) {
     return <Navigate to="/login" replace />;

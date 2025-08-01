@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Grid,
   Paper,
   Typography,
   Card,
@@ -31,6 +30,7 @@ import {
   Tab,
   TextField
 } from '@mui/material';
+import { Grid } from '../../components/GridFix';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
@@ -694,7 +694,7 @@ export default function Reports() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"

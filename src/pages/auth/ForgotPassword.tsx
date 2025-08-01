@@ -5,7 +5,6 @@ import {
   Button,
   TextField,
   Link,
-  Grid,
   Box,
   Typography,
   Container,
@@ -96,13 +95,11 @@ export default function ForgotPassword() {
               >
                 {isLoading ? <CircularProgress size={24} /> : 'Enviar Instrucciones'}
               </Button>
-              <Grid container justifyContent="center">
-                <Grid item>
-                  <Link component={RouterLink} to="/login" variant="body2">
-                    Volver a Iniciar Sesión
-                  </Link>
-                </Grid>
-              </Grid>
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Link component={RouterLink} to="/login" variant="body2">
+                  Volver a Iniciar Sesión
+                </Link>
+              </Box>
             </Box>
           ) : (
             <Box sx={{ mt: 3, width: '100%', textAlign: 'center' }}>

@@ -5,7 +5,6 @@ import {
   Button,
   TextField,
   Link,
-  Grid,
   Box,
   Typography,
   Container,
@@ -50,7 +49,7 @@ export default function Register() {
     general: ''
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name?: string; value: unknown } }) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -58,7 +57,7 @@ export default function Register() {
     });
     
     // Limpiar error específico cuando el usuario comienza a escribir
-    if (errors[name as keyof typeof errors]) {
+    if (name && errors[name as keyof typeof errors]) {
       setErrors({
         ...errors,
         [name as string]: ''
@@ -160,8 +159,8 @@ export default function Register() {
           )}
           
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
+            <Box sx={{ display: 'grid', gap: 2 }}>
+              <Box>
                 <TextField
                   autoComplete="name"
                   name="name"
@@ -176,8 +175,8 @@ export default function Register() {
                   helperText={errors.name}
                   disabled={isLoading}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Box>
+              <Box>
                 <TextField
                   required
                   fullWidth
@@ -191,8 +190,8 @@ export default function Register() {
                   helperText={errors.email}
                   disabled={isLoading}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Box>
+              <Box>
                 <TextField
                   required
                   fullWidth
@@ -207,8 +206,8 @@ export default function Register() {
                   helperText={errors.password}
                   disabled={isLoading}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Box>
+              <Box>
                 <TextField
                   required
                   fullWidth
@@ -222,8 +221,8 @@ export default function Register() {
                   helperText={errors.confirmPassword}
                   disabled={isLoading}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </Box>
+              <Box>
                 <FormControl fullWidth>
                   <InputLabel id="role-label">Tipo de cuenta</InputLabel>
                   <Select
@@ -239,9 +238,9 @@ export default function Register() {
                     <MenuItem value={UserRole.ASISTENTE}>Asistente Virtual</MenuItem>
                   </Select>
                 </FormControl>
-              </Grid>
+              </Box>
               {formData.role === UserRole.EMPRESARIO && (
-                <Grid item xs={12}>
+                <Box>
                   <TextField
                     fullWidth
                     name="company"
@@ -253,9 +252,9 @@ export default function Register() {
                     helperText={errors.company}
                     disabled={isLoading}
                   />
-                </Grid>
+                </Box>
               )}
-            </Grid>
+            </Box>
             <Button
               type="submit"
               fullWidth
@@ -265,13 +264,11 @@ export default function Register() {
             >
               {isLoading ? <CircularProgress size={24} /> : 'Registrarse'}
             </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link component={RouterLink} to="/login" variant="body2">
-                  ¿Ya tienes una cuenta? Inicia sesión
-                </Link>
-              </Grid>
-            </Grid>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Link component={RouterLink} to="/login" variant="body2">
+                ¿Ya tienes una cuenta? Inicia sesión
+              </Link>
+            </Box>
           </Box>
         </Box>
       </Paper>

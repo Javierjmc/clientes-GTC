@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Box,
-  Grid,
   Paper,
   Typography,
   Card,
@@ -47,6 +46,7 @@ import {
   StepLabel,
   StepContent
 } from '@mui/material';
+import { Grid } from '../../components/GridFix';
 import {
   Settings as SettingsIcon,
   Notifications as NotificationsIcon,

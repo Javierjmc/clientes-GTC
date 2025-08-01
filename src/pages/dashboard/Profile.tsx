@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Grid,
   Paper,
   Typography,
   Card,
@@ -39,6 +38,7 @@ import {
   TableRow,
   Badge
 } from '@mui/material';
+import { Grid } from '../../components/GridFix';
 import {
   Edit as EditIcon,
   Save as SaveIcon,

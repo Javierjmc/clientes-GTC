@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Grid,
   Paper,
   Typography,
   Card,
@@ -20,6 +19,7 @@ import {
   IconButton,
   Tooltip
 } from '@mui/material';
+import { Grid } from '../../components/GridFix';
 import {
   Assignment as AssignmentIcon,
   AttachMoney as AttachMoneyIcon,
@@ -45,7 +45,7 @@ interface Project {
   createdAt?: string;
   updatedAt?: string;
   progress?: number;
-  deadline?: Date;
+  deadline?: string;
 }
 
 interface Task {
@@ -57,6 +57,7 @@ interface Task {
   createdAt: string;
   updatedAt: string;
   dueDate?: string;
+  assignedTo?: string;
 }
 
 interface VirtualAssistant {
@@ -69,6 +70,8 @@ interface VirtualAssistant {
   assignedToName?: string;
   status: 'active' | 'inactive';
   createdAt: string;
+  avatarUrl?: string;
+  hourlyRate?: number;
 }
 
 interface InvoiceItem {
@@ -81,41 +84,42 @@ interface InvoiceItem {
 
 interface Invoice {
   id: string;
-  clientId: string;
+  clientId?: string;
   number: string;
   amount: number;
-  currency: string;
+  currency?: string;
   status: 'pending' | 'paid' | 'overdue' | 'cancelled';
-  issueDate: string;
+  issueDate?: string;
   dueDate: string;
   paidDate?: string;
   items: InvoiceItem[];
   notes?: string;
+  date?: string;
 }
 
 // Datos de ejemplo - En una aplicación real, estos vendrían de una API
 const mockProjects: Project[] = [
-  { id: '1', name: 'Desarrollo Web', description: 'Desarrollo de sitio web corporativo', status: 'En progreso', progress: 65, deadline: new Date('2023-12-31'), assistantId: '1' },
-  { id: '2', name: 'Gestión de Redes Sociales', description: 'Administración de perfiles sociales', status: 'En progreso', progress: 40, deadline: new Date('2023-11-15'), assistantId: '2' },
-  { id: '3', name: 'Investigación de Mercado', description: 'Análisis de competencia', status: 'Pendiente', progress: 10, deadline: new Date('2023-12-01'), assistantId: '3' },
+  { id: '1', name: 'Desarrollo Web', description: 'Desarrollo de sitio web corporativo', status: 'in_progress', progress: 65, deadline: '2023-12-31', assistantId: '1' },
+  { id: '2', name: 'Gestión de Redes Sociales', description: 'Administración de perfiles sociales', status: 'in_progress', progress: 40, deadline: '2023-11-15', assistantId: '2' },
+  { id: '3', name: 'Investigación de Mercado', description: 'Análisis de competencia', status: 'pending', progress: 10, deadline: '2023-12-01', assistantId: '3' },
 ];
 
 const mockAssistants: VirtualAssistant[] = [
-  { id: '1', name: 'Ana García', email: 'ana@example.com', skills: ['Desarrollo Web', 'SEO', 'Copywriting'], hourlyRate: 15, availability: 'Completa', avatarUrl: '' },
-  { id: '2', name: 'Carlos Rodríguez', email: 'carlos@example.com', skills: ['Redes Sociales', 'Diseño Gráfico'], hourlyRate: 12, availability: 'Parcial', avatarUrl: '' },
-  { id: '3', name: 'María López', email: 'maria@example.com', skills: ['Investigación', 'Análisis de Datos'], hourlyRate: 14, availability: 'Completa', avatarUrl: '' },
+  { id: '1', name: 'Ana García', email: 'ana@example.com', skills: ['Desarrollo Web', 'SEO', 'Copywriting'], hourlyRate: 15, specialty: 'Desarrollo Web', status: 'active', createdAt: '2023-01-01', avatarUrl: '' },
+  { id: '2', name: 'Carlos Rodríguez', email: 'carlos@example.com', skills: ['Redes Sociales', 'Diseño Gráfico'], hourlyRate: 12, specialty: 'Diseño', status: 'active', createdAt: '2023-02-15', avatarUrl: '' },
+  { id: '3', name: 'María López', email: 'maria@example.com', skills: ['Investigación', 'Análisis de Datos'], hourlyRate: 14, specialty: 'Análisis', status: 'active', createdAt: '2023-03-10', avatarUrl: '' },
 ];
 
 const mockTasks: Task[] = [
-  { id: '1', title: 'Diseñar página de inicio', description: 'Crear mockups para homepage', status: 'Completada', projectId: '1', dueDate: new Date('2023-10-15'), assignedTo: '1' },
-  { id: '2', title: 'Implementar autenticación', description: 'Desarrollar sistema de login', status: 'En progreso', projectId: '1', dueDate: new Date('2023-10-20'), assignedTo: '1' },
-  { id: '3', title: 'Publicar contenido semanal', description: 'Crear y programar posts', status: 'Pendiente', projectId: '2', dueDate: new Date('2023-10-18'), assignedTo: '2' },
-  { id: '4', title: 'Analizar competidores', description: 'Investigar 5 competidores principales', status: 'En progreso', projectId: '3', dueDate: new Date('2023-10-25'), assignedTo: '3' },
+  { id: '1', title: 'Diseñar página de inicio', description: 'Crear mockups para homepage', status: 'completed', projectId: '1', dueDate: '2023-10-15', assignedTo: '1', createdAt: '2023-10-01', updatedAt: '2023-10-10' },
+  { id: '2', title: 'Implementar autenticación', description: 'Desarrollar sistema de login', status: 'in_progress', projectId: '1', dueDate: '2023-10-20', assignedTo: '1', createdAt: '2023-10-05', updatedAt: '2023-10-12' },
+  { id: '3', title: 'Publicar contenido semanal', description: 'Crear y programar posts', status: 'pending', projectId: '2', dueDate: '2023-10-18', assignedTo: '2', createdAt: '2023-10-08', updatedAt: '2023-10-08' },
+  { id: '4', title: 'Analizar competidores', description: 'Investigar 5 competidores principales', status: 'in_progress', projectId: '3', dueDate: '2023-10-25', assignedTo: '3', createdAt: '2023-10-10', updatedAt: '2023-10-15' },
 ];
 
 const mockInvoices: Invoice[] = [
-  { id: '1', number: 'INV-2023-001', date: new Date('2023-10-01'), dueDate: new Date('2023-10-15'), amount: 450, status: 'Pagada', items: [] },
-  { id: '2', number: 'INV-2023-002', date: new Date('2023-10-05'), dueDate: new Date('2023-10-20'), amount: 320, status: 'Pendiente', items: [] },
+  { id: '1', number: 'INV-2023-001', date: '2023-10-01', dueDate: '2023-10-15', amount: 450, status: 'paid', items: [] },
+  { id: '2', number: 'INV-2023-002', date: '2023-10-05', dueDate: '2023-10-20', amount: 320, status: 'pending', items: [] },
 ];
 
 export default function Dashboard() {
@@ -141,12 +145,12 @@ export default function Dashboard() {
 
   // Calcular estadísticas
   const totalProjects = projects.length;
-  const activeProjects = projects.filter(p => p.status === 'En progreso').length;
+  const activeProjects = projects.filter(p => p.status === 'in_progress').length;
   const totalAssistants = assistants.length;
-  const pendingInvoices = invoices.filter(i => i.status === 'Pendiente').length;
+  const pendingInvoices = invoices.filter(i => i.status === 'pending').length;
   const totalInvoiceAmount = invoices.reduce((sum, invoice) => sum + invoice.amount, 0);
   const pendingInvoiceAmount = invoices
-    .filter(i => i.status === 'Pendiente')
+    .filter(i => i.status === 'pending')
     .reduce((sum, invoice) => sum + invoice.amount, 0);
 
   if (loading) {
@@ -268,7 +272,7 @@ export default function Dashboard() {
               {tasks.length}
             </Typography>
             <Typography variant="body2">
-              {tasks.filter(t => t.status === 'Pendiente').length} tareas pendientes
+              {tasks.filter(t => t.status === 'pending').length} tareas pendientes
             </Typography>
           </Paper>
         </Grid>
@@ -297,7 +301,7 @@ export default function Dashboard() {
                     <Chip 
                       label={project.status} 
                       size="small" 
-                      color={project.status === 'En progreso' ? 'primary' : 'default'}
+                      color={project.status === 'in_progress' ? 'primary' : 'default'}
                     />
                   </Box>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
@@ -308,7 +312,7 @@ export default function Dashboard() {
                       Progreso: {project.progress}%
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Fecha límite: {project.deadline.toLocaleDateString()}
+                      Fecha límite: {project.deadline ? new Date(project.deadline).toLocaleDateString() : 'No definida'}
                     </Typography>
                   </Box>
                   <LinearProgress 
@@ -389,8 +393,8 @@ export default function Dashboard() {
                   return (
                     <ListItem key={task.id} alignItems="flex-start">
                       <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: task.status === 'Completada' ? 'success.main' : 'primary.main' }}>
-                          {task.status === 'Completada' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
+                        <Avatar sx={{ bgcolor: task.status === 'completed' ? 'success.main' : 'primary.main' }}>
+                          {task.status === 'completed' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
                         </Avatar>
                       </ListItemAvatar>
                       <ListItemText
@@ -401,8 +405,9 @@ export default function Dashboard() {
                               label={task.status} 
                               size="small" 
                               color={
-                                task.status === 'Completada' ? 'success' : 
-                                task.status === 'En progreso' ? 'primary' : 'default'
+                                task.status === 'completed' ? 'success' : 
+                                task.status === 'in_progress' ? 'primary' : 
+                                task.status === 'pending' ? 'warning' : 'default'
                               }
                             />
                           </Box>
@@ -413,7 +418,7 @@ export default function Dashboard() {
                               {project?.name} - {assistant?.name}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
-                              Vence: {task.dueDate.toLocaleDateString()}
+                              Vence: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No definida'}
                             </Typography>
                           </>
                         }
