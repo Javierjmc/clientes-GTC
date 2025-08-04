@@ -1,10 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { ThemeProvider as MuiThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { esES } from '@mui/material/locale';
 
 // Contextos
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 
 // Componentes
 import Layout from './components/Layout';
@@ -24,75 +25,85 @@ import Profile from './pages/dashboard/Profile';
 import Tasks from './pages/dashboard/Tasks';
 import Settings from './pages/dashboard/Settings';
 
-// Rutas protegidas
+// Hook para autenticación
+import { useAuth } from './contexts/AuthContext';
+
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
-  const token = localStorage.getItem('gtc_token');
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
+  const { isAuthenticated } = useAuth();
+  
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
-// Tema personalizado
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-      light: '#42a5f5',
-      dark: '#1565c0',
+// Componente para aplicar el tema
+const ThemedApp = () => {
+  const { actualTheme } = useTheme();
+  
+  // Tema personalizado con soporte para modo oscuro
+  const theme = createTheme({
+    palette: {
+      mode: actualTheme,
+      primary: {
+        main: '#1976d2',
+        light: '#42a5f5',
+        dark: '#1565c0',
+      },
+      secondary: {
+        main: '#9c27b0',
+        light: '#ba68c8',
+        dark: '#7b1fa2',
+      },
+      background: {
+        default: actualTheme === 'light' ? '#f5f5f5' : '#121212',
+        paper: actualTheme === 'light' ? '#ffffff' : '#1e1e1e',
+      },
+      text: {
+        primary: actualTheme === 'light' ? 'rgba(0, 0, 0, 0.87)' : 'rgba(255, 255, 255, 0.87)',
+        secondary: actualTheme === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)',
+      },
+      divider: actualTheme === 'light' ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.12)',
     },
-    secondary: {
-      main: '#9c27b0',
-      light: '#ba68c8',
-      dark: '#7b1fa2',
+    typography: {
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      h4: {
+        fontWeight: 600,
+      },
+      h5: {
+        fontWeight: 500,
+      },
+      h6: {
+        fontWeight: 500,
+      },
     },
-    background: {
-      default: '#f5f5f5',
-    },
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    h4: {
-      fontWeight: 600,
-    },
-    h5: {
-      fontWeight: 500,
-    },
-    h6: {
-      fontWeight: 500,
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          textTransform: 'none',
-          fontWeight: 500,
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
+            textTransform: 'none',
+            fontWeight: 500,
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
+          },
+        },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
+            overflow: 'hidden',
+          },
         },
       },
     },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          overflow: 'hidden',
-        },
-      },
-    },
-  },
-}, esES); // Configuración para español
+  }, esES); // Configuración para español
 
-function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
         <Router>
@@ -110,6 +121,7 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+            
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Layout>
@@ -118,14 +130,6 @@ function App() {
               </ProtectedRoute>
             } />
             
-            {/* Rutas para empresarios */}
-            <Route path="/assistants" element={
-              <ProtectedRoute>
-                <Layout>
-                  <Assistants />
-                </Layout>
-              </ProtectedRoute>
-            } />
             <Route path="/projects" element={
               <ProtectedRoute>
                 <Layout>
@@ -133,6 +137,15 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+            
+            <Route path="/assistants" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Assistants />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
             <Route path="/invoices" element={
               <ProtectedRoute>
                 <Layout>
@@ -140,6 +153,7 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+            
             <Route path="/reports" element={
               <ProtectedRoute>
                 <Layout>
@@ -147,6 +161,7 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+            
             <Route path="/profile" element={
               <ProtectedRoute>
                 <Layout>
@@ -154,6 +169,7 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+            
             <Route path="/tasks" element={
               <ProtectedRoute>
                 <Layout>
@@ -161,6 +177,7 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+            
             <Route path="/settings" element={
               <ProtectedRoute>
                 <Layout>
@@ -169,69 +186,19 @@ function App() {
               </ProtectedRoute>
             } />
             
-            {/* Rutas para administradores */}
-            <Route path="/admin/dashboard" element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Dashboard de Administrador (Por implementar)</div>
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/clients" element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Gestión de Clientes (Por implementar)</div>
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/assistants" element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Gestión de Asistentes (Por implementar)</div>
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/projects" element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Gestión de Proyectos (Por implementar)</div>
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/invoices" element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Gestión de Facturas (Por implementar)</div>
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/reports" element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Gestión de Informes (Por implementar)</div>
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/users" element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Gestión de Usuarios (Por implementar)</div>
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/settings" element={
-              <ProtectedRoute>
-                <Layout>
-                  <div>Configuración del Sistema (Por implementar)</div>
-                </Layout>
-              </ProtectedRoute>
-            } />
-            
-            {/* Ruta por defecto - redirige al dashboard */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            {/* Ruta por defecto */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
       </AuthProvider>
+    </MuiThemeProvider>
+  );
+};
+
+function App() {
+  return (
+    <ThemeProvider>
+      <ThemedApp />
     </ThemeProvider>
   );
 }

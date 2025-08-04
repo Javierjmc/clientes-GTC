@@ -18,7 +18,8 @@ import {
   Button,
   Avatar,
   Menu,
-  MenuItem
+  MenuItem,
+  Tooltip
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -29,9 +30,14 @@ import {
   Description as DescriptionIcon,
   Notifications as NotificationsIcon,
   Settings as SettingsIcon,
-  Logout as LogoutIcon
+  Logout as LogoutIcon,
+  Brightness4 as DarkModeIcon,
+  Brightness7 as LightModeIcon,
+  SettingsBrightness as SettingsBrightnessIcon,
+  ArrowDropDown as ArrowDropDownIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Tipos definidos localmente
 enum UserRole {
@@ -49,6 +55,22 @@ interface LayoutProps {
 
 export default function Layout({ children, window }: LayoutProps) {
   const { user, logout, isAuthenticated } = useAuth();
+  const { mode, toggleTheme, setThemeMode } = useTheme();
+  const [themeMenu, setThemeMenu] = useState<null | HTMLElement>(null);
+  
+  const handleThemeMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setThemeMenu(event.currentTarget);
+  };
+  
+  const handleThemeMenuClose = () => {
+    setThemeMenu(null);
+  };
+  
+  const handleThemeChange = (newTheme: 'light' | 'dark' | 'auto') => {
+    setThemeMode(newTheme);
+    handleThemeMenuClose();
+  };
+  
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -153,6 +175,48 @@ export default function Layout({ children, window }: LayoutProps) {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             {user?.role === UserRole.ADMINISTRADOR ? 'Panel de Administración' : 'Portal del Cliente'}
           </Typography>
+          
+          <Tooltip title="Cambiar tema">
+            <IconButton 
+              color="inherit" 
+              onClick={handleThemeMenuOpen}
+              aria-controls="theme-menu"
+              aria-haspopup="true"
+              aria-label="cambiar tema"
+            >
+              {mode === 'light' && <LightModeIcon />}
+              {mode === 'dark' && <DarkModeIcon />}
+              {mode === 'auto' && <SettingsBrightnessIcon />}
+              <ArrowDropDownIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          
+          <Menu
+            id="theme-menu"
+            anchorEl={themeMenu}
+            keepMounted
+            open={Boolean(themeMenu)}
+            onClose={handleThemeMenuClose}
+          >
+            <MenuItem onClick={() => handleThemeChange('light')}>
+              <ListItemIcon>
+                <LightModeIcon fontSize="small" />
+              </ListItemIcon>
+              Tema Claro
+            </MenuItem>
+            <MenuItem onClick={() => handleThemeChange('dark')}>
+              <ListItemIcon>
+                <DarkModeIcon fontSize="small" />
+              </ListItemIcon>
+              Tema Oscuro
+            </MenuItem>
+            <MenuItem onClick={() => handleThemeChange('auto')}>
+              <ListItemIcon>
+                <SettingsBrightnessIcon fontSize="small" />
+              </ListItemIcon>
+              Automático (sistema)
+            </MenuItem>
+          </Menu>
           
           <IconButton color="inherit" aria-label="notifications">
             <NotificationsIcon />

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
 import {
   Box,
   Paper,
@@ -127,18 +128,27 @@ export default function Settings() {
   const [alert, setAlert] = useState<{ type: 'success' | 'error' | 'info' | 'warning'; message: string } | null>(null);
   
   // Estados para configuraciones generales
+  const { mode, setThemeMode } = useTheme();
   const [generalSettings, setGeneralSettings] = useState({
     language: 'es',
     timezone: 'America/Mexico_City',
     dateFormat: 'DD/MM/YYYY',
     timeFormat: '24h',
     currency: 'MXN',
-    theme: 'light',
+    theme: mode,
     compactMode: false,
     autoSave: true,
     autoBackup: true,
     showTutorials: true
   });
+  
+  // Efecto para sincronizar el tema con el contexto global
+  useEffect(() => {
+    setGeneralSettings(prev => ({
+      ...prev,
+      theme: mode
+    }));
+  }, [mode]);
   
   // Estados para notificaciones
   const [notificationSettings, setNotificationSettings] = useState({
@@ -223,6 +233,11 @@ export default function Settings() {
   const handleSaveSettings = async (settingsType: string) => {
     setLoading(true);
     try {
+      // Si estamos guardando la configuración de apariencia, actualizar el tema
+      if (settingsType === 'apariencia' && generalSettings.theme !== mode) {
+        setThemeMode(generalSettings.theme as 'light' | 'dark' | 'auto');
+      }
+      
       // Simular guardado
       await new Promise(resolve => setTimeout(resolve, 1000));
       setAlert({ type: 'success', message: `Configuración de ${settingsType} guardada exitosamente` });
@@ -944,25 +959,29 @@ export default function Settings() {
                   
                   <FormControl component="fieldset">
                     <RadioGroup
-                      value={generalSettings.theme}
-                      onChange={(e) => setGeneralSettings(prev => ({ ...prev, theme: e.target.value }))}
-                    >
-                      <FormControlLabel 
-                        value="light" 
-                        control={<Radio />} 
-                        label="Tema Claro" 
-                      />
-                      <FormControlLabel 
-                        value="dark" 
-                        control={<Radio />} 
-                        label="Tema Oscuro" 
-                      />
-                      <FormControlLabel 
-                        value="auto" 
-                        control={<Radio />} 
-                        label="Automático (según el sistema)" 
-                      />
-                    </RadioGroup>
+                        value={generalSettings.theme}
+                        onChange={(e) => {
+                          const newTheme = e.target.value as 'light' | 'dark' | 'auto';
+                          setGeneralSettings(prev => ({ ...prev, theme: newTheme }));
+                          setThemeMode(newTheme);
+                        }}
+                      >
+                        <FormControlLabel 
+                          value="light" 
+                          control={<Radio />} 
+                          label="Tema Claro" 
+                        />
+                        <FormControlLabel 
+                          value="dark" 
+                          control={<Radio />} 
+                          label="Tema Oscuro" 
+                        />
+                        <FormControlLabel 
+                          value="auto" 
+                          control={<Radio />} 
+                          label="Automático (según el sistema)" 
+                        />
+                      </RadioGroup>
                   </FormControl>
                 </CardContent>
               </Card>
@@ -999,6 +1018,19 @@ export default function Settings() {
                   </Box>
                 </CardContent>
               </Card>
+            </Grid>
+            
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button
+                  variant="contained"
+                  startIcon={<SaveIcon />}
+                  onClick={() => handleSaveSettings('apariencia')}
+                  disabled={loading}
+                >
+                  Guardar Configuración de Apariencia
+                </Button>
+              </Box>
             </Grid>
           </Grid>
         </TabPanel>
