@@ -1,34 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-
-// Tipos definidos localmente
-enum UserRole {
-  EMPRESARIO = 'empresario',
-  ASISTENTE = 'asistente',
-  ADMINISTRADOR = 'administrador'
-}
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  firstName?: string;
-  lastName?: string;
-  role: UserRole;
-  company?: string;
-  createdAt: string;
-  lastLogin?: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  register: (userData: { name: string; email: string; password: string; company?: string; role: UserRole }) => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-}
+import { User, UserRole, AuthContextType } from '../types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

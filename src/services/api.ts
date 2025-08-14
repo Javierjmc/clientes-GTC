@@ -1,108 +1,15 @@
 import axios from 'axios';
-
-// Tipos definidos localmente
-enum UserRole {
-  EMPRESARIO = 'empresario',
-  ASISTENTE = 'asistente',
-  ADMINISTRADOR = 'administrador'
-}
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  company?: string;
-  createdAt: string;
-  lastLogin?: string;
-}
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  clientId?: string;
-  assistantId?: string;
-  status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
-  startDate?: string;
-  endDate?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  progress?: number;
-  deadline?: Date;
-}
-
-interface Task {
-  id: string;
-  projectId: string;
-  title: string;
-  description: string;
-  status: 'pending' | 'in_progress' | 'completed';
-  createdAt: string;
-  updatedAt: string;
-  dueDate?: string;
-}
-
-interface InvoiceItem {
-  id: string;
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  total: number;
-}
-
-interface Invoice {
-  id: string;
-  clientId: string;
-  number: string;
-  amount: number;
-  currency: string;
-  status: 'pending' | 'paid' | 'overdue' | 'cancelled';
-  issueDate: string;
-  dueDate: string;
-  paidDate?: string;
-  items: InvoiceItem[];
-  notes?: string;
-}
-
-interface VirtualAssistant {
-  id: string;
-  name: string;
-  email: string;
-  specialty: string;
-  skills: string[];
-  assignedTo?: string;
-  assignedToName?: string;
-  status: 'active' | 'inactive';
-  createdAt: string;
-}
-
-interface MonthlyReport {
-  id: string;
-  assistantId: string;
-  clientId: string;
-  month: number;
-  year: number;
-  totalHours: number;
-  completedTasks: number;
-  summary: string;
-  highlights?: string;
-  challenges?: string;
-  nextSteps?: string;
-  createdAt: string;
-  fileUrl?: string;
-}
-
-interface Notification {
-  id: string;
-  userId: string;
-  title: string;
-  message: string;
-  type: 'info' | 'warning' | 'success' | 'error';
-  read: boolean;
-  createdAt: string;
-  link?: string;
-}
+import {
+  User,
+  Project,
+  Task,
+  Invoice,
+  InvoiceItem,
+  VirtualAssistant,
+  MonthlyReport,
+  Notification,
+  ApiResponse
+} from '../types';
 
 // Configuración base de axios
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.globaltalentconnections.com/api';

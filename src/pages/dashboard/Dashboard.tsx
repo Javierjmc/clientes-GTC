@@ -41,72 +41,11 @@ import {
   HourglassEmpty as HourglassEmptyIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import { LoadingSpinner, CardSkeleton } from '../../components/LoadingSpinner';
+import { useNotifications } from '../../components/NotificationSystem';
+import { Project, Task, VirtualAssistant, Invoice, InvoiceItem } from '../../types';
 
-// Tipos definidos localmente
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  clientId?: string;
-  assistantId?: string;
-  status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
-  startDate?: string;
-  endDate?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  progress?: number;
-  deadline?: string;
-}
-
-interface Task {
-  id: string;
-  projectId: string;
-  title: string;
-  description: string;
-  status: 'pending' | 'in_progress' | 'completed';
-  createdAt: string;
-  updatedAt: string;
-  dueDate?: string;
-  assignedTo?: string;
-}
-
-interface VirtualAssistant {
-  id: string;
-  name: string;
-  email: string;
-  specialty: string;
-  skills: string[];
-  assignedTo?: string;
-  assignedToName?: string;
-  status: 'active' | 'inactive';
-  createdAt: string;
-  avatarUrl?: string;
-  hourlyRate?: number;
-}
-
-interface InvoiceItem {
-  id: string;
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  total: number;
-}
-
-interface Invoice {
-  id: string;
-  clientId?: string;
-  clientName?: string;
-  number: string;
-  amount: number;
-  currency?: string;
-  status: 'pending' | 'paid' | 'overdue' | 'cancelled';
-  issueDate?: string;
-  dueDate: string;
-  paidDate?: string;
-  items: InvoiceItem[];
-  notes?: string;
-  date?: string;
-}
+// Los tipos ahora se importan desde el archivo centralizado
 
 // Datos de ejemplo - En una aplicación real, estos vendrían de una API
 const mockProjects: Project[] = [
@@ -138,6 +77,7 @@ const mockInvoices: Invoice[] = [
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { showSuccess, showError } = useNotifications();
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const [assistants, setAssistants] = useState<VirtualAssistant[]>([]);
@@ -146,16 +86,26 @@ export default function Dashboard() {
 
   // Simular carga de datos
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setProjects(mockProjects);
-      setAssistants(mockAssistants);
-      setTasks(mockTasks);
-      setInvoices(mockInvoices);
-      setLoading(false);
-    }, 1000);
+    const loadData = async () => {
+      try {
+        // Simular delay de API
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        setProjects(mockProjects);
+        setAssistants(mockAssistants);
+        setTasks(mockTasks);
+        setInvoices(mockInvoices);
+        
+        showSuccess('Datos cargados correctamente');
+      } catch (error) {
+        showError('Error al cargar los datos del dashboard');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
-  }, []);
+    loadData();
+  }, [showSuccess, showError]);
 
   // Calcular estadísticas
   const totalProjects = projects.length;
@@ -169,8 +119,11 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-        <CircularProgress />
+      <Box sx={{ p: 3 }}>
+        <LoadingSpinner message="Cargando dashboard..." />
+        <Box sx={{ mt: 4 }}>
+          <CardSkeleton count={4} />
+        </Box>
       </Box>
     );
   }

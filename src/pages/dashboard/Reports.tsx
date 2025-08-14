@@ -50,23 +50,24 @@ import {
   Business as BusinessIcon,
   Timeline as TimelineIcon
 } from '@mui/icons-material';
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer
-} from 'recharts';
+// Temporalmente comentado para evitar errores
+// import {
+//   LineChart,
+//   Line,
+//   AreaChart,
+//   Area,
+//   BarChart,
+//   Bar,
+//   PieChart,
+//   Pie,
+//   Cell,
+//   XAxis,
+//   YAxis,
+//   CartesianGrid,
+//   Tooltip,
+//   Legend,
+//   ResponsiveContainer
+// } from 'recharts';
 import { useAuth } from '../../contexts/AuthContext';
 
 // Tipos locales
@@ -661,21 +662,12 @@ export default function Reports() {
                 <Typography variant="h6" gutterBottom>
                   Evolución de Ingresos y Proyectos
                 </Typography>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={revenueChartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis yAxisId="left" />
-                    <YAxis yAxisId="right" orientation="right" />
-                    <Tooltip formatter={(value, name) => [
-                      name === 'revenue' ? formatCurrency(Number(value)) : value,
-                      name === 'revenue' ? 'Ingresos' : 'Proyectos'
-                    ]} />
-                    <Legend />
-                    <Bar yAxisId="right" dataKey="projects" fill="#8884d8" name="Proyectos" />
-                    <Line yAxisId="left" type="monotone" dataKey="revenue" stroke="#82ca9d" name="Ingresos" />
-                  </LineChart>
-                </ResponsiveContainer>
+                {/* Gráfico temporalmente deshabilitado */}
+                <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', borderRadius: 1 }}>
+                  <Typography variant="body1" color="text.secondary">
+                    Gráfico de ingresos y proyectos (temporalmente deshabilitado)
+                  </Typography>
+                </Box>
               </CardContent>
             </Card>
           </Grid>
@@ -687,25 +679,12 @@ export default function Reports() {
                 <Typography variant="h6" gutterBottom>
                   Estado de Proyectos
                 </Typography>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={projectStatusData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {projectStatusData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                {/* Gráfico temporalmente deshabilitado */}
+                <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', borderRadius: 1 }}>
+                  <Typography variant="body1" color="text.secondary">
+                    Gráfico de estado de proyectos (temporalmente deshabilitado)
+                  </Typography>
+                </Box>
               </CardContent>
             </Card>
           </Grid>
@@ -721,19 +700,12 @@ export default function Reports() {
                 <Typography variant="h6" gutterBottom>
                   Ingresos por Asistente
                 </Typography>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={assistantRevenueData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip formatter={(value, name) => [
-                      name === 'revenue' ? formatCurrency(Number(value)) : value,
-                      name === 'revenue' ? 'Ingresos' : name === 'projects' ? 'Proyectos' : 'Eficiencia %'
-                    ]} />
-                    <Legend />
-                    <Bar dataKey="revenue" fill="#8884d8" name="Ingresos" />
-                  </BarChart>
-                </ResponsiveContainer>
+                {/* Gráfico temporalmente deshabilitado */}
+                <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', borderRadius: 1 }}>
+                  <Typography variant="body1" color="text.secondary">
+                    Gráfico de ingresos por asistente (temporalmente deshabilitado)
+                  </Typography>
+                </Box>
               </CardContent>
             </Card>
           </Grid>

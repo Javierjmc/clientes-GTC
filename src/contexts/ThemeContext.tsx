@@ -1,13 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-type ThemeMode = 'light' | 'dark' | 'auto';
-
-interface ThemeContextType {
-  mode: ThemeMode;
-  toggleTheme: () => void;
-  setThemeMode: (mode: ThemeMode) => void;
-  actualTheme: 'light' | 'dark'; // Tema actual aplicado (considerando preferencia del sistema)
-}
+import { ThemeMode, ThemeContextType } from '../types';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
@@ -16,11 +9,11 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  // Intentar obtener el tema guardado en localStorage, o usar 'auto' por defecto
-  const [mode, setMode] = useState<ThemeMode>(() => {
-    const savedTheme = localStorage.getItem('gtc_theme');
-    return (savedTheme as ThemeMode) || 'auto';
-  });
+  // Usar hook personalizado para manejar localStorage
+  const { value: mode, setValue: setMode } = useLocalStorage<ThemeMode>(
+    'gtc_theme',
+    'auto'
+  );
 
   // Estado para el tema actual aplicado (considerando preferencia del sistema)
   const [actualTheme, setActualTheme] = useState<'light' | 'dark'>('light');
@@ -44,21 +37,20 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [mode]);
 
-  // Guardar el tema en localStorage cuando cambie
+  // Determinar el tema actual basado en el modo seleccionado
   useEffect(() => {
-    localStorage.setItem('gtc_theme', mode);
-    
-    // Determinar el tema actual basado en el modo seleccionado
     if (mode === 'auto') {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setActualTheme(prefersDark ? 'dark' : 'light');
     } else {
       setActualTheme(mode as 'light' | 'dark');
     }
-    
-    // Aplicar clase al body para estilos globales si es necesario
-    document.body.dataset.theme = actualTheme;
-  }, [mode, actualTheme]);
+  }, [mode]);
+
+  // Aplicar clase al body para CSS global
+  useEffect(() => {
+    document.body.className = actualTheme;
+  }, [actualTheme]);
 
   const toggleTheme = () => {
     setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));

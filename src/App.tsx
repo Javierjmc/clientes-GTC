@@ -9,6 +9,11 @@ import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 
 // Componentes
 import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
+import { NotificationProvider } from './components/NotificationSystem';
+
+// Tipos
+import { ThemeContextType } from './types';
 
 // Páginas de autenticación
 import Login from './pages/auth/Login';
@@ -197,9 +202,19 @@ const ThemedApp = () => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <ThemedApp />
-    </ThemeProvider>
+    <ErrorBoundary 
+      showDetails={process.env.NODE_ENV === 'development'}
+      onError={(error, errorInfo) => {
+        // En producción, aquí enviarías el error a un servicio de monitoreo
+        console.error('Error global capturado:', error, errorInfo);
+      }}
+    >
+      <ThemeProvider>
+        <NotificationProvider>
+          <ThemedApp />
+        </NotificationProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
