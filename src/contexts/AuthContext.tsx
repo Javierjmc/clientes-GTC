@@ -36,11 +36,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // y recibiríamos un token y datos del usuario
       
       // Simulamos un usuario autenticado
+      // Si el email es admin@gtc.com, crear un usuario administrador
+      const isAdmin = email === 'admin@gtc.com';
       const mockUser: User = {
-        id: '1',
+        id: isAdmin ? 'admin-1' : '1',
         email,
-        name: 'Usuario Demo',
-        role: UserRole.EMPRESARIO,
+        name: isAdmin ? 'Administrador GTC' : 'Usuario Demo',
+        role: isAdmin ? UserRole.ADMINISTRADOR : UserRole.EMPRESARIO,
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString()
       };

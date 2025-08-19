@@ -30,13 +30,34 @@ import Profile from './pages/dashboard/Profile';
 import Tasks from './pages/dashboard/Tasks';
 import Settings from './pages/dashboard/Settings';
 
+// Páginas de administración
+import AdminDashboard from './pages/admin/AdminDashboard';
+import UserManagement from './pages/admin/UserManagement';
+import SystemSettings from './pages/admin/SystemSettings';
+import AdvancedReports from './pages/admin/AdvancedReports';
+
 // Hook para autenticación
 import { useAuth } from './contexts/AuthContext';
+import { UserRole } from './types';
 
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
   const { isAuthenticated } = useAuth();
   
   return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
+
+const AdminRoute = ({ children }: { children: React.ReactElement }) => {
+  const { isAuthenticated, user } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  if (user?.role !== UserRole.ADMINISTRADOR) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
 };
 
 // Componente para aplicar el tema
@@ -189,6 +210,47 @@ const ThemedApp = () => {
                   <Settings />
                 </Layout>
               </ProtectedRoute>
+            } />
+            
+            {/* Rutas de administración */}
+            <Route path="/admin" element={
+              <AdminRoute>
+                <Layout>
+                  <AdminDashboard />
+                </Layout>
+              </AdminRoute>
+            } />
+            
+            <Route path="/admin/dashboard" element={
+              <AdminRoute>
+                <Layout>
+                  <AdminDashboard />
+                </Layout>
+              </AdminRoute>
+            } />
+            
+            <Route path="/admin/users" element={
+              <AdminRoute>
+                <Layout>
+                  <UserManagement />
+                </Layout>
+              </AdminRoute>
+            } />
+            
+            <Route path="/admin/settings" element={
+              <AdminRoute>
+                <Layout>
+                  <SystemSettings />
+                </Layout>
+              </AdminRoute>
+            } />
+            
+            <Route path="/admin/reports" element={
+              <AdminRoute>
+                <Layout>
+                  <AdvancedReports />
+                </Layout>
+              </AdminRoute>
             } />
             
             {/* Ruta por defecto */}

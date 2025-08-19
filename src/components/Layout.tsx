@@ -34,17 +34,14 @@ import {
   Brightness4 as DarkModeIcon,
   Brightness7 as LightModeIcon,
   SettingsBrightness as SettingsBrightnessIcon,
-  ArrowDropDown as ArrowDropDownIcon
+  ArrowDropDown as ArrowDropDownIcon,
+  AdminPanelSettings as AdminPanelSettingsIcon,
+  SupervisorAccount as SupervisorAccountIcon,
+  Assessment as AssessmentIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-
-// Tipos definidos localmente
-enum UserRole {
-  EMPRESARIO = 'empresario',
-  ASISTENTE = 'asistente',
-  ADMINISTRADOR = 'administrador'
-}
+import { UserRole } from '../types';
 
 const drawerWidth = 240;
 
@@ -109,14 +106,10 @@ export default function Layout({ children, window }: LayoutProps) {
 
   // Menú para administradores
   const adminMenuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin/dashboard' },
-    { text: 'Clientes', icon: <PeopleIcon />, path: '/admin/clients' },
-    { text: 'Asistentes', icon: <PeopleIcon />, path: '/admin/assistants' },
-    { text: 'Proyectos', icon: <AssignmentIcon />, path: '/admin/projects' },
-    { text: 'Facturas', icon: <ReceiptIcon />, path: '/admin/invoices' },
-    { text: 'Informes', icon: <DescriptionIcon />, path: '/admin/reports' },
-    { text: 'Usuarios', icon: <PeopleIcon />, path: '/admin/users' },
-    { text: 'Configuración', icon: <SettingsIcon />, path: '/admin/settings' }
+    { text: 'Dashboard Admin', icon: <AdminPanelSettingsIcon />, path: '/admin/dashboard' },
+    { text: 'Gestión de Usuarios', icon: <SupervisorAccountIcon />, path: '/admin/users' },
+    { text: 'Configuración Sistema', icon: <SettingsIcon />, path: '/admin/settings' },
+    { text: 'Reportes Avanzados', icon: <AssessmentIcon />, path: '/admin/reports' }
   ];
 
   // Seleccionar el menú según el rol del usuario
