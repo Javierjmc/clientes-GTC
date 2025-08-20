@@ -47,7 +47,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import { LoadingSpinner, CardSkeleton } from '../../components/LoadingSpinner';
-import { useNotifications } from '../../components/NotificationSystem';
+import { useNotifications } from '../../components/notificationsystem';
 
 // Interfaces para métricas del sistema
 interface SystemMetrics {

@@ -58,7 +58,7 @@ import {
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
-import { useNotifications } from '../../components/NotificationSystem';
+import { useNotifications } from '../../components/notificationsystem';
 
 interface SystemConfig {
   // Configuraciones generales

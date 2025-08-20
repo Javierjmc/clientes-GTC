@@ -10,7 +10,7 @@ import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 // Componentes
 import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
-import { NotificationProvider } from './components/NotificationSystem';
+import { NotificationProvider } from './components/notificationsystem';
 
 // Tipos
 import { ThemeContextType } from './types';

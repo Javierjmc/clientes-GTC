@@ -49,7 +49,7 @@ import {
 } from '@mui/icons-material';
 import { DataTable } from '../../components/DataTable';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
-import { useNotifications } from '../../components/NotificationSystem';
+import { useNotifications } from '../../components/notificationsystem';
 import { User, UserRole, UserStatus } from '../../types';
 import { userService } from '../../services/api';
 

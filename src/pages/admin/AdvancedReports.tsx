@@ -56,7 +56,9 @@ import {
   Analytics as AnalyticsIcon
 } from '@mui/icons-material';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
-import { useNotifications } from '../../components/NotificationSystem';
+import { useNotifications } from '../../components/notificationsystem';
+import { ProjectCharts, FinancialCharts, ProductivityCharts } from '../../components/charts/ReportCharts';
+import { exportToPDF, exportToExcel, commonColumnConfigs } from '../../utils/exportUtils';
 
 interface ReportData {
   id: string;
@@ -149,6 +151,159 @@ const AdvancedReports = () => {
       status: 'processing',
       fileSize: undefined,
       downloadUrl: undefined
+    }
+  ];
+
+  // Datos mock para gráficos
+  const mockProjects = [
+    {
+      id: '1',
+      name: 'Plataforma E-commerce',
+      status: 'active',
+      budget: 120000,
+      spent: 85000,
+      startDate: '2023-10-01',
+      endDate: '2024-02-15',
+      client: 'TechCorp',
+      progress: 75
+    },
+    {
+      id: '2',
+      name: 'App Móvil Finanzas',
+      status: 'active',
+      budget: 75000,
+      spent: 52500,
+      startDate: '2023-11-15',
+      endDate: '2024-03-01',
+      client: 'FinanceInc',
+      progress: 60
+    },
+    {
+      id: '3',
+      name: 'Sistema CRM',
+      status: 'paused',
+      budget: 100000,
+      spent: 45000,
+      startDate: '2023-09-01',
+      endDate: '2024-01-20',
+      client: 'SalesForce',
+      progress: 30
+    },
+    {
+      id: '4',
+      name: 'Portal Corporativo',
+      status: 'completed',
+      budget: 80000,
+      spent: 78000,
+      startDate: '2023-08-01',
+      endDate: '2023-12-15',
+      client: 'CorpSolutions',
+      progress: 100
+    }
+  ];
+
+  const mockInvoices = [
+    {
+      id: '1',
+      amount: 25000,
+      status: 'paid' as const,
+      dueDate: '2024-01-15',
+      client: 'TechCorp',
+      createdAt: '2023-12-15'
+    },
+    {
+      id: '2',
+      amount: 18000,
+      status: 'pending' as const,
+      dueDate: '2024-02-01',
+      client: 'FinanceInc',
+      createdAt: '2024-01-01'
+    },
+    {
+      id: '3',
+      amount: 32000,
+      status: 'overdue' as const,
+      dueDate: '2024-01-10',
+      client: 'SalesForce',
+      createdAt: '2023-12-10'
+    }
+  ];
+
+  const mockExpenses = [
+    {
+      id: '1',
+      amount: 5000,
+      category: 'Software',
+      date: '2024-01-05',
+      description: 'Licencias de desarrollo'
+    },
+    {
+      id: '2',
+      amount: 3000,
+      category: 'Hardware',
+      date: '2024-01-10',
+      description: 'Equipos de oficina'
+    },
+    {
+      id: '3',
+      amount: 2000,
+      category: 'Marketing',
+      date: '2024-01-12',
+      description: 'Campaña publicitaria'
+    }
+  ];
+
+  const mockTasks = [
+    {
+      id: '1',
+      title: 'Diseño de interfaz',
+      status: 'completed' as const,
+      priority: 'high' as const,
+      assignee: 'Juan Pérez',
+      createdAt: '2024-01-01',
+      completedAt: '2024-01-10',
+      estimatedHours: 20,
+      actualHours: 18
+    },
+    {
+      id: '2',
+      title: 'Desarrollo backend',
+      status: 'in_progress' as const,
+      priority: 'medium' as const,
+      assignee: 'María García',
+      createdAt: '2024-01-05',
+      estimatedHours: 40,
+      actualHours: 25
+    },
+    {
+      id: '3',
+      title: 'Testing de aplicación',
+      status: 'pending' as const,
+      priority: 'low' as const,
+      assignee: 'Carlos López',
+      createdAt: '2024-01-08',
+      estimatedHours: 15
+    }
+  ];
+
+  const mockUsers = [
+    {
+      id: '1',
+      name: 'Juan Pérez',
+      role: 'Developer',
+      department: 'Desarrollo'
+    },
+    {
+      id: '2',
+      name: 'María García',
+      role: 'Backend Developer',
+      department: 'Desarrollo'
+    },
+    {
+      id: '3',
+      name: 'Carlos López',
+      role: 'QA Tester',
+      department: 'Calidad'
     }
   ];
 
@@ -373,6 +528,143 @@ const AdvancedReports = () => {
     }
   };
 
+  // Funciones de exportación
+  const handleExportToPDF = (reportType: string) => {
+    try {
+      let data: any[] = [];
+      let columns: any[] = [];
+      let title = '';
+
+      switch (reportType) {
+        case 'projects':
+          data = mockProjects;
+          columns = commonColumnConfigs.projects;
+          title = 'Reporte de Proyectos';
+          break;
+        case 'users':
+          data = userActivity;
+          columns = [
+            { key: 'userName', title: 'Usuario', width: 25 },
+            { key: 'email', title: 'Email', width: 30 },
+            { key: 'lastLogin', title: 'Último Acceso', width: 20, format: (date: string) => new Date(date).toLocaleDateString('es-ES') },
+            { key: 'sessionsCount', title: 'Sesiones', width: 15, align: 'center' as const },
+            { key: 'totalTime', title: 'Tiempo Total', width: 15 },
+            { key: 'status', title: 'Estado', width: 15, align: 'center' as const }
+          ];
+          title = 'Reporte de Actividad de Usuarios';
+          break;
+        case 'performance':
+          data = projectPerformance;
+          columns = [
+            { key: 'projectName', title: 'Proyecto', width: 30 },
+            { key: 'client', title: 'Cliente', width: 20 },
+            { key: 'progress', title: 'Progreso (%)', width: 15, align: 'center' as const },
+            { key: 'budget', title: 'Presupuesto', width: 20, align: 'right' as const, format: (value: number) => `$${value?.toLocaleString() || '0'}` },
+            { key: 'spent', title: 'Gastado', width: 20, align: 'right' as const, format: (value: number) => `$${value?.toLocaleString() || '0'}` },
+            { key: 'status', title: 'Estado', width: 15, align: 'center' as const }
+          ];
+          title = 'Reporte de Rendimiento de Proyectos';
+          break;
+        default:
+          data = reports;
+          columns = [
+            { key: 'name', title: 'Nombre', width: 35 },
+            { key: 'type', title: 'Tipo', width: 15, align: 'center' as const },
+            { key: 'period', title: 'Período', width: 20 },
+            { key: 'generatedAt', title: 'Generado', width: 20, format: (date: string) => new Date(date).toLocaleDateString('es-ES') },
+            { key: 'status', title: 'Estado', width: 15, align: 'center' as const }
+          ];
+          title = 'Reporte General';
+      }
+
+      exportToPDF(data, columns, {
+        title,
+        subtitle: `Período: ${selectedPeriod}`,
+        filename: `${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`,
+        orientation: 'landscape',
+        includeDate: true,
+        includePageNumbers: true
+      });
+
+      showNotification({
+        message: `Exportando ${title} a PDF...`,
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Error exporting to PDF:', error);
+      showNotification({
+        message: 'Error al exportar a PDF',
+        severity: 'error'
+      });
+    }
+  };
+
+  const handleExportToExcel = (reportType: string) => {
+    try {
+      let data: any[] = [];
+      let columns: any[] = [];
+      let title = '';
+
+      switch (reportType) {
+        case 'projects':
+          data = mockProjects;
+          columns = commonColumnConfigs.projects;
+          title = 'Reporte de Proyectos';
+          break;
+        case 'users':
+          data = userActivity;
+          columns = [
+            { key: 'userName', title: 'Usuario' },
+            { key: 'email', title: 'Email' },
+            { key: 'lastLogin', title: 'Último Acceso', format: (date: string) => new Date(date).toLocaleDateString('es-ES') },
+            { key: 'sessionsCount', title: 'Sesiones' },
+            { key: 'totalTime', title: 'Tiempo Total' },
+            { key: 'status', title: 'Estado' }
+          ];
+          title = 'Actividad de Usuarios';
+          break;
+        case 'performance':
+          data = projectPerformance;
+          columns = [
+            { key: 'projectName', title: 'Proyecto' },
+            { key: 'client', title: 'Cliente' },
+            { key: 'progress', title: 'Progreso (%)' },
+            { key: 'budget', title: 'Presupuesto', format: (value: number) => `$${value?.toLocaleString() || '0'}` },
+            { key: 'spent', title: 'Gastado', format: (value: number) => `$${value?.toLocaleString() || '0'}` },
+            { key: 'status', title: 'Estado' }
+          ];
+          title = 'Rendimiento de Proyectos';
+          break;
+        default:
+          data = reports;
+          columns = [
+            { key: 'name', title: 'Nombre' },
+            { key: 'type', title: 'Tipo' },
+            { key: 'period', title: 'Período' },
+            { key: 'generatedAt', title: 'Generado', format: (date: string) => new Date(date).toLocaleDateString('es-ES') },
+            { key: 'status', title: 'Estado' }
+          ];
+          title = 'Reporte General';
+      }
+
+      exportToExcel(data, columns, {
+        title,
+        filename: `${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.xlsx`
+      });
+
+      showNotification({
+        message: `Exportando ${title} a Excel...`,
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      showNotification({
+        message: 'Error al exportar a Excel',
+        severity: 'error'
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ p: 3 }}>
@@ -445,8 +737,19 @@ const AdvancedReports = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-              <Button startIcon={<FileDownloadIcon />} variant="outlined">
-                Exportar CSV
+              <Button 
+                startIcon={<FileDownloadIcon />} 
+                variant="outlined"
+                onClick={() => handleExportToPDF(selectedReportType)}
+              >
+                Exportar PDF
+              </Button>
+              <Button 
+                startIcon={<FileDownloadIcon />} 
+                variant="outlined"
+                onClick={() => handleExportToExcel(selectedReportType)}
+              >
+                Exportar Excel
               </Button>
               <Button startIcon={<PrintIcon />} variant="outlined">
                 Imprimir
@@ -492,6 +795,120 @@ const AdvancedReports = () => {
             </Card>
           </Grid>
         ))}
+      </Grid>
+
+      {/* Gráficos de Reportes */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        {selectedReportType === 'projects' && (
+          <>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Estado de Proyectos" />
+                <CardContent>
+                  <ProjectCharts.StatusChart data={mockProjects} />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Presupuesto vs Gastado" />
+                <CardContent>
+                  <ProjectCharts.BudgetChart data={mockProjects} />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Progreso de Proyectos" />
+                <CardContent>
+                  <ProjectCharts.ProgressChart data={mockProjects} />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Proyectos por Cliente" />
+                <CardContent>
+                  <ProjectCharts.ClientChart data={mockProjects} />
+                </CardContent>
+              </Card>
+            </Grid>
+          </>
+        )}
+        
+        {selectedReportType === 'revenue' && (
+          <>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Estado de Facturas" />
+                <CardContent>
+                  <FinancialCharts.InvoiceStatusChart data={mockInvoices} />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Ingresos vs Gastos Mensuales" />
+                <CardContent>
+                  <FinancialCharts.MonthlyIncomeChart data={mockInvoices} expenses={mockExpenses} />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Gastos por Categoría" />
+                <CardContent>
+                  <FinancialCharts.ExpensesCategoryChart data={mockExpenses} />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Resumen Financiero" />
+                <CardContent>
+                  <FinancialCharts.SummaryChart invoices={mockInvoices} expenses={mockExpenses} />
+                </CardContent>
+              </Card>
+            </Grid>
+          </>
+        )}
+        
+        {selectedReportType === 'performance' && (
+          <>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Estado de Tareas" />
+                <CardContent>
+                  <ProductivityCharts.TaskStatusChart data={mockTasks} />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Prioridad de Tareas" />
+                <CardContent>
+                  <ProductivityCharts.TaskPriorityChart data={mockTasks} />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Productividad por Usuario" />
+                <CardContent>
+                  <ProductivityCharts.UserProductivityChart data={mockUsers} />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardHeader title="Tiempo Estimado vs Real" />
+                <CardContent>
+                  <ProductivityCharts.TimeComparisonChart data={mockTasks} />
+                </CardContent>
+              </Card>
+            </Grid>
+          </>
+        )}
       </Grid>
 
       {/* Reportes Generados */}
